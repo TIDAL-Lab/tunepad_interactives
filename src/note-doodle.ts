@@ -67,7 +67,7 @@ export class NoteDoodle extends HTMLElement {
         this.root.adoptedStyleSheets.push(styles); //add stylesheets
         this.root.innerHTML = html; //giving document some HTML
         this.svg = this.root.querySelector('svg') as SVGSVGElement; // root svg element
-        const patch_url = new URL('/assets/sounds/grand-piano/patch.json', import.meta.url);
+        const patch_url = new URL('/assets/sounds/voices/grand-piano/patch.json', import.meta.url);
         this.synth = new Synthesizer(patch_url);
     }
 
