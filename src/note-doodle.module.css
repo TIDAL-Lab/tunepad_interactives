@@ -1,0 +1,120 @@
+.ring {
+    fill: #AC6BF4;
+    
+}
+.ring:hover {
+    fill: #C9A0F7;
+}
+.outer-ring {
+    fill: #DAC5F1;
+}
+.center-circle {
+    fill: #331C4D;
+}
+
+.note {
+    fill: rgb(255, 142, 161);
+    transition: color 0.08s ease;
+}
+
+#pointer {
+    stroke: #331C4D;
+    stroke-width: 4;
+    stroke-linecap: round;
+}
+
+
+#tick-mark {
+    stroke: #FFFFFF;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+#music-line {
+    stroke: #000000;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+.ledger-line{
+    stroke:rgb(255, 142, 161);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+}
+
+#sharp {
+    fill: rgb(255, 142, 161);
+}
+
+#stem {
+    stroke: rgb(255, 142, 161);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    transition: color 0.08s ease;
+}
+
+
+.scaled-up{
+    transform: scale(5);
+}
+
+#dynamicText {
+    user-select: none;
+    font-family: 'Tahoma', sans-serif;
+    font-size: 6px;
+    padding-left: 42px;
+    color: rgb(255, 142, 161);
+
+}
+
+.interactive-text{
+    font-size: 16px;
+    margin-left: 150px;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    padding-top: 0px;
+    transition: color 0.08s ease;
+}
+
+.interactive-button{
+    font-size: 12px;
+    margin: 1px;
+    margin-left: 150px;
+    margin-top: 0px;
+    padding: 7px;
+    border-width: 0px;
+    border-style: solid;
+    background-color: #331C4D;
+    color: white;
+    border-radius: 5px;
+}
+
+.interactive-button:hover {
+    opacity: 80%;
+}
+/*
+#music-note:hover ellipse { fill: pink; }
+#music-note:hover line { stroke: pink; }
+
+#music-note:active ellipse { fill: blue; }
+#music-note:active line { stroke: blue; }
+*/
+
+.context-menu {
+    background: white;
+    border: 1px solid #888888;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.context-menu div {
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+.context-menu div:hover {
+    background-color: #f1f1f1;
+}
+
+.menuBox {
+    box-shadow: #888888;
+}
