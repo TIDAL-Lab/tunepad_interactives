@@ -50,19 +50,22 @@ export class Scale extends HTMLElement {
         this.root.innerHTML = html;
     }
 
-    connectedCallback() {
+    async connectedCallback() {
         // load the container <svg> element from the shadow dom
         this.container = (this.root.querySelector("svg.container") as SVGSVGElement);
         this.container?.append(this.parent);
         this.container?.setAttribute('viewBox', `0 0 100 1000`);
-        console.log(this.container);
         
         // render SVG content
         this.render(true, true);
 
         // create grand piano synth
-        const patch_url = new URL('/assets/sounds/voices/grand-piano/patch.json', import.meta.url);
-        this.synth = new Synthesizer(patch_url);
+        this.synth = new Synthesizer();
+        try {
+            await this.synth.loadPatch(new URL('/sounds/voices/grand-piano/patch.json', import.meta.url));
+        } catch (e) {
+            this.synth.loadPatch(new URL('/assets/sounds/voices/grand-piano/patch.json', import.meta.url));
+        }
     }
     
     disconnectedCallback() {
@@ -82,17 +85,17 @@ export class Scale extends HTMLElement {
         const note = e.currentTarget as Element;
         let clickedIndex = Scale.NOTES.findIndex((value) => value === note.classList[1]) - Scale.startNote;
         if (clickedIndex < 0) clickedIndex += 7; 
-        let playSound;
+        let n : number;
 
         if (Scale.isMajor) {
-            if (note.classList.contains("last")) playSound = Scale.MIDI[Scale.startNote] + Scale.MAJOR[clickedIndex] + 12;
-            else playSound = Scale.MIDI[Scale.startNote] + Scale.MAJOR[clickedIndex];  
+            if (note.classList.contains("last")) n = Scale.MIDI[Scale.startNote] + Scale.MAJOR[clickedIndex] + 12;
+            else n = Scale.MIDI[Scale.startNote] + Scale.MAJOR[clickedIndex];  
         }
         else {
-            if (note.classList.contains("last")) playSound = Scale.MIDI[Scale.startNote] + Scale.MINOR[clickedIndex] + 12;
-            else playSound = playSound = Scale.MIDI[Scale.startNote] + Scale.MINOR[clickedIndex];
+            if (note.classList.contains("last")) n = Scale.MIDI[Scale.startNote] + Scale.MINOR[clickedIndex] + 12;
+            else n = Scale.MIDI[Scale.startNote] + Scale.MINOR[clickedIndex];
         }
-        this.synth.playNote(playSound);
+        this.synth.scheduleNote(n, 0);
     }
 
     /// add highlight when note hovered
@@ -364,6 +367,8 @@ class Staff {
     /// visual staff element for SVG
     staff = document.createElementNS("http://www.w3.org/2000/svg", 'g');
 
+    static clef_url : string = "/assets/images/treble_clef.png"
+
     constructor(scale : Scale){
         this.scale = scale;
 
@@ -381,11 +386,15 @@ class Staff {
 
         // add treble clef
         const clef = document.createElementNS("http://www.w3.org/2000/svg", 'image');
-        clef.setAttribute("href", "/assets/images/treble_clef.png");
+        clef.setAttribute("href", Staff.clef_url);
         clef.setAttribute("x", "0");
         clef.setAttribute("y", "64");
         clef.setAttribute("width", "15");
         clef.setAttribute("height", "25");
+        clef.onerror = (err) => {
+            Staff.clef_url = "/images/treble_clef.png"
+            clef.setAttribute("href", Staff.clef_url);
+        }
         this.staff.append(clef);
         this.el.append(this.staff);
 
@@ -671,8 +680,8 @@ class CodeBlock {
             t.setAttribute("dominant-baseline", "central");
             
             // add MIDI number
-            if (Scale.isMajor) t.innerHTML = `playSound(${noteNum + Scale.MAJOR[i]})`;
-            else t.innerHTML = `playSound(${noteNum + Scale.MINOR[i]})`;
+            if (Scale.isMajor) t.innerHTML = `playNote(${noteNum + Scale.MAJOR[i]})`;
+            else t.innerHTML = `playNote(${noteNum + Scale.MINOR[i]})`;
 
             t.classList.add("code", Scale.NOTES[(Scale.startNote + i + 7) % 7], "note");
             if(i == 0) t.classList.add("first");
