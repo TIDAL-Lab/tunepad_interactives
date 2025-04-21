@@ -231,11 +231,6 @@ export class GrooveGarden extends HTMLElement {
 
     static readonly ELEMENT = "groove-garden";
 
-    static aqua_texture = new Image();
-    static redorange_texture = new Image();
-    static lime_texture = new Image();
-    static center_orange_yellow = new Image();
-
     static observedAttributes = [
         'min-value',
         'max-value',
@@ -312,16 +307,6 @@ export class GrooveGarden extends HTMLElement {
                 window.requestAnimationFrame((t) => this._animate(t));
             }
         });
-
-
-        GrooveGarden.aqua_texture.src = '/assets/images/textures/aqua.png';
-        GrooveGarden.redorange_texture.src = '/assets/images/textures/red-paper.png';
-        GrooveGarden.lime_texture.src = '/assets/images/textures/lime.png';
-        GrooveGarden.center_orange_yellow.src = '/assets/images/flowers/circle_orange_yellow.png';
-        GrooveGarden.aqua_texture.onload = () => { this.render(); }
-        GrooveGarden.redorange_texture.onload = () => { this.render(); }
-        GrooveGarden.lime_texture.onload = () => { this.render(); }
-        GrooveGarden.center_orange_yellow.onload = () => { this.render(); }
     }
 
     private _start_time = 0;
