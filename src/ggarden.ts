@@ -16,7 +16,7 @@ class Flower {
     private petals = new Array<number>();
 
     private cx : number;
-    private cy : number; 
+    private cy : number;
     private r : number;
     public note : number = 0;
     //private pattern? : CanvasPattern = undefined;
@@ -37,10 +37,16 @@ class Flower {
         const arc = Math.PI * 2 / 16;
         const P1 = rotate([ 1, 0 ], i * arc);
         const P2 = up ? rotate([ 1, 0 ], (i + 1) * arc) : rotate([ 1, 0 ], (i - 1) * arc);
-        const foldZ = this.isPetalHighlighted(i) ? -0.075 : 0.075;
+        const foldZ = this.isPetalHighlighted(i) ? -0.05 : 0.05;
         return up ? 
             normalize(normal([ P1[0], P1[1], foldZ ], [0, 0, 0], [ P2[0], P2[1], 0 ])) :
             normalize(normal([0, 0, 0], [ P1[0], P1[1], foldZ ], [ P2[0], P2[1], 0 ]));
+    }
+
+    shadowColor(i : number, up : boolean, boost : number = 1) : string {
+        const norm = this.surfaceNormal(i, up);
+        const shadow = Math.max(-1.0, Math.min(1.0, dot(LIGHT_RAY, norm) * boost));
+        return (shadow > 0) ? `rgba(255, 255, 255, ${shadow})` : `rgba(0, 0, 0, ${-shadow})`;        
     }
 
 
@@ -48,7 +54,7 @@ class Flower {
         const x = this.cx;
         const y = this.cy;
         const r = this.r;
-        const ry = r / 5.5;
+        const ry = r / 5.7;
 
         c.resetTransform();
         c.translate(x, y);
@@ -56,9 +62,9 @@ class Flower {
         c.rotate(i * Math.PI * 2 / 16);
         c.moveTo(0, 0);
         if (up) {
-            c.bezierCurveTo(r * 0.95, ry, r * 0.65, ry, r, 0);
+            c.bezierCurveTo(r * 0.8, ry, r * 0.8, ry, r, 0);
         } else {
-            c.bezierCurveTo(r * 0.95, -ry, r * 0.65, -ry, r, 0);
+            c.bezierCurveTo(r * 0.8, -ry, r * 0.8, -ry, r, 0);
         }
         c.lineTo(0, 0);
     }
@@ -82,7 +88,7 @@ class Flower {
         c.shadowBlur = 8;
         c.shadowOffsetX = -10;
         c.shadowOffsetY = 10;
-        c.shadowColor = '#0007';
+        c.shadowColor = '#0009';
         c.fillStyle = this.color;
         c.fill();
         c.restore();
@@ -97,29 +103,30 @@ class Flower {
             this.halfPetalShape(c, i, up);
             c.closePath();
 
-            const norm = this.surfaceNormal(i, up);
-            const shadow = Math.max(-1.0, Math.min(1.0, dot(LIGHT_RAY, norm)));
-            const fill = shadow > 0 ? `rgba(255, 255, 255, ${shadow})` : `rgba(0, 0, 0, ${-shadow})`;
             c.fillStyle = this.color;
             c.fill();
+            c.lineWidth = 1;
             if (highlight) {
                 c.fillStyle = '#fffa';
                 c.strokeStyle = 'white';
-                c.lineWidth = 1;
             }
             else if (this.isPetalHighlighted(i)) {
                 c.fillStyle = '#fff7';
                 c.strokeStyle = '#ffff';
-                c.fill();
                 c.lineWidth = 2;
             } 
             else {
-                c.fillStyle = fill;
-                c.strokeStyle = '#fff2';
-                c.fill();
-                c.lineWidth = 1;
+                c.fillStyle = this.shadowColor(i, up);
+                c.strokeStyle = '#0001';
             }
             c.fill();
+            c.stroke();
+
+            c.beginPath();
+            c.moveTo(0, up ? 1 : -1);
+            c.lineTo(r, up ? 1 : -1);
+            c.lineWidth = 1;
+            c.strokeStyle = this.shadowColor(i, up, 1.5);
             c.stroke();
         }
         c.restore();
@@ -155,7 +162,8 @@ class Flower {
             c.lineTo(d, d * -0.187);
             c.closePath();
             c.fillStyle = this.color;
-            c.strokeStyle = '#0002';
+            c.strokeStyle = '#0001';
+            c.lineWidth = 0.5;
             c.fill();
             c.stroke();
             c.restore();
