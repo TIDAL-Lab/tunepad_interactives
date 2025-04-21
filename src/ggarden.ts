@@ -1,106 +1,180 @@
 import styles from './ggarden.module.css' with {type: 'css'};
+import stageStyles from './ggarden.stage.module.css' with {type: 'css'};
 import html from './ggarden.module.html';
+import stageHTML from './ggarden.stage.module.html';
 import { Synthesizer, TunePadAudio } from '@tunepad/audio';
+
+const ORANGE = 'rgb(220, 100, 70)';
+const BLUE = 'rgb(150, 190, 215)';
+const YELLOW = 'rgb(250, 210, 110)';
+const LIGHT_RAY : Vector3 = normalize([ -100, -80, -1 ]);
 
 
 class Flower {
 
+    private color : string;
     private petals = new Array<number>();
 
     private cx : number;
     private cy : number; 
     private r : number;
     public note : number = 0;
+    //private pattern? : CanvasPattern = undefined;
+    //private texture : HTMLImageElement;
 
-    constructor(note : number, cx : number, cy : number, r : number, count : number = 16) {
+    constructor(note : number, cx : number, cy : number, r : number, color : string) {
         this.cx = cx;
         this.cy = cy;
         this.r = r;
         this.note = note;
-        for (let i=0; i<count; i++) this.petals.push(0);
+        this.color = color;
+        //this.texture = texture;
+        for (let i=0; i<16; i++) this.petals.push(0);
     }
 
-    _drawPetal(c : CanvasRenderingContext2D, i : number, highlight : boolean, render : boolean = true) {
+
+    surfaceNormal(i : number, up : boolean) : Vector3 {
+        const arc = Math.PI * 2 / 16;
+        const P1 = rotate([ 1, 0 ], i * arc);
+        const P2 = up ? rotate([ 1, 0 ], (i + 1) * arc) : rotate([ 1, 0 ], (i - 1) * arc);
+        const foldZ = this.isPetalHighlighted(i) ? -0.075 : 0.075;
+        return up ? 
+            normalize(normal([ P1[0], P1[1], foldZ ], [0, 0, 0], [ P2[0], P2[1], 0 ])) :
+            normalize(normal([0, 0, 0], [ P1[0], P1[1], foldZ ], [ P2[0], P2[1], 0 ]));
+    }
+
+
+    halfPetalShape(c : CanvasRenderingContext2D, i : number, up : boolean) {
         const x = this.cx;
         const y = this.cy;
         const r = this.r;
-        const rx = this.petals.length > 16 ? r/12 : r/7;
+        const ry = r / 5.5;
+
         c.resetTransform();
+        c.translate(x, y);
+        c.scale(1, -1);
+        c.rotate(i * Math.PI * 2 / 16);
+        c.moveTo(0, 0);
+        if (up) {
+            c.bezierCurveTo(r * 0.95, ry, r * 0.65, ry, r, 0);
+        } else {
+            c.bezierCurveTo(r * 0.95, -ry, r * 0.65, -ry, r, 0);
+        }
+        c.lineTo(0, 0);
+    }
+
+    petalShape(c : CanvasRenderingContext2D, i : number) {
+        c.beginPath();
+        this.halfPetalShape(c, i, true);
+        this.halfPetalShape(c, i, false);
+        c.closePath();
+    }
+
+
+    drawShadow(c : CanvasRenderingContext2D) {
         c.save();
         c.beginPath();
-        c.fillStyle = (this.petals[i] > 0) ? 'cyan' : 'white';
-        c.strokeStyle = 'black';
-        c.translate(x, y);
-        c.rotate(i * Math.PI * 2 / this.petals.length);
-        c.ellipse(0, -r/2, rx, r/2, 0, 0, 2 * Math.PI);
-        if (render) {
+        for (let i = 0; i<16; i++) {
+            this.halfPetalShape(c, i, true);
+            this.halfPetalShape(c, i, false);
+        }
+        c.closePath();
+        c.shadowBlur = 8;
+        c.shadowOffsetX = -10;
+        c.shadowOffsetY = 10;
+        c.shadowColor = '#0007';
+        c.fillStyle = this.color;
+        c.fill();
+        c.restore();
+    }
+
+    drawHalfPetal(c : CanvasRenderingContext2D, i : number, up : boolean, highlight : boolean = false) {
+        const r = this.r;
+        c.resetTransform();
+        c.save();
+        {
+            c.beginPath();
+            this.halfPetalShape(c, i, up);
+            c.closePath();
+
+            const norm = this.surfaceNormal(i, up);
+            const shadow = Math.max(-1.0, Math.min(1.0, dot(LIGHT_RAY, norm)));
+            const fill = shadow > 0 ? `rgba(255, 255, 255, ${shadow})` : `rgba(0, 0, 0, ${-shadow})`;
+            c.fillStyle = this.color;
             c.fill();
-            c.lineWidth = highlight ? 4 : 2;
+            if (highlight) {
+                c.fillStyle = '#fffa';
+                c.strokeStyle = 'white';
+                c.lineWidth = 1;
+            }
+            else if (this.isPetalHighlighted(i)) {
+                c.fillStyle = '#fff7';
+                c.strokeStyle = '#ffff';
+                c.fill();
+                c.lineWidth = 2;
+            } 
+            else {
+                c.fillStyle = fill;
+                c.strokeStyle = '#fff2';
+                c.fill();
+                c.lineWidth = 1;
+            }
+            c.fill();
             c.stroke();
         }
-        c.translate(-x, -y);
         c.restore();
+    }
+
+    drawCenter(c : CanvasRenderingContext2D) {
+        const x = this.cx;
+        const y = this.cy;
+        const d = this.r / 5.5;
+
+        c.resetTransform();
+        c.save();
+        {
+            c.beginPath();
+            c.arc(x, y, d, 0, Math.PI * 2);
+            c.fillStyle = this.color;
+            c.shadowBlur = 4;
+            c.shadowOffsetX = 0;
+            c.shadowOffsetY = 0;
+            c.shadowColor = '#0007';
+            c.fill();
+        }
+        c.restore();
+        for (let i=0; i<16; i++) {
+            c.resetTransform();
+            c.save();
+            c.beginPath();
+            c.translate(x, y);
+            c.scale(1, -1);
+            c.rotate(i * Math.PI * 2 / 16);
+            c.moveTo(0, 0);
+            c.lineTo(d, d * 0.187);
+            c.lineTo(d, d * -0.187);
+            c.closePath();
+            c.fillStyle = this.color;
+            c.strokeStyle = '#0002';
+            c.fill();
+            c.stroke();
+            c.restore();
+        }
+    }
+
+    drawPetal(c : CanvasRenderingContext2D, i : number, beat : number = -1) {
+        this.drawHalfPetal(c, i, true, beat == i);
+        this.drawHalfPetal(c, i, false, beat == i);
     }
 
 
     draw(c : CanvasRenderingContext2D, beat : number = -1) {
+        this.drawShadow(c);
 
-        let highlight = -1;
-        let even = false;
-        const x = this.cx;
-        const y = this.cy;
-        const r = this.r;
-        const d = this.petals.length / 4;
-
-        if (beat >= 0) {
-            highlight = Math.floor(beat * d);
-            even = Math.floor(beat) % 2 == 0;
+        for (let i=0; i<16; i++) {
+            this.drawPetal(c, i, Math.floor(beat * 4));
         }
-
-        c.save();
-        {
-            c.strokeStyle = 'black';
-            c.lineWidth = 10;
-            c.lineCap = 'round';
-            c.beginPath();
-            c.resetTransform();
-            c.translate(x, y);
-            c.moveTo(0, 0);
-            if (even) {
-                c.quadraticCurveTo(-r/3, r * 1.25, 0, r * 2);
-                //c.bezierCurveTo(-r/4, r, r/2, r, 0, r * 2);
-            } else {
-                c.quadraticCurveTo(r/3, r * 1.25, 0, r * 2);
-                //c.bezierCurveTo(r/4, r, -r/2, r, 0, r * 2);
-            }
-            c.stroke();
-
-            for (let i=0; i<this.petals.length; i++) {
-                this._drawPetal(c, i, (i == highlight));
-            }
-            if (highlight >= 0) {
-                this._drawPetal(c, highlight, true);
-            }
-
-            
-            c.beginPath();
-            c.arc(x, y, r / 3.75, 0, Math.PI * 2);
-            c.fillStyle = 'black';
-            c.fill();
-
-            c.beginPath();
-            c.resetTransform();
-            c.translate(x, y + r * 2);
-            const wave = Math.PI / 15 * (even ? -1 : 1);
-            c.rotate(Math.PI / 4 + wave);
-            c.ellipse(0, -r/2, r/7, r/2, 0, 0, 2 * Math.PI);
-            c.rotate(-Math.PI / 2)
-            c.ellipse(0, -r/2, r/7, r/2, 0, 0, 2 * Math.PI);
-            c.fillStyle = 'black';
-            c.fill();
-        }
-        c.restore();
-        c.resetTransform();
+        this.drawCenter(c);
     }
 
 
@@ -124,7 +198,7 @@ class Flower {
         if (d <= r / 3.75 || d > r * 1.25) return -1;
 
         for (let i=this.petals.length - 1; i >= 0; i--) {
-            this._drawPetal(c, i, false, false);
+            this.petalShape(c, i);
             if (c.isPointInPath(x, y)) {
                 return i;
             }
@@ -156,6 +230,11 @@ class Flower {
 export class GrooveGarden extends HTMLElement {
 
     static readonly ELEMENT = "groove-garden";
+
+    static aqua_texture = new Image();
+    static redorange_texture = new Image();
+    static lime_texture = new Image();
+    static center_orange_yellow = new Image();
 
     static observedAttributes = [
         'min-value',
@@ -190,10 +269,10 @@ export class GrooveGarden extends HTMLElement {
         this.ctx = this.canvas.getContext('2d') as CanvasRenderingContext2D;
         this.playButton = this.root.querySelector('#play-pause-button') as HTMLButtonElement;
 
-        this.flowers.push(new Flower(0, 80, 200, 76));
-        this.flowers.push(new Flower(2, 220, 270, 70));
-        this.flowers.push(new Flower(4, 380, 200, 82));
-        this.flowers.push(new Flower(10, 580, 300, 90));
+        //this.flowers.push(new Flower(0, 80, 200, 76, GrooveGarden.aqua_texture));
+        this.flowers.push(new Flower(4, 190, 230, 150, BLUE));
+        this.flowers.push(new Flower(0, 530, 200, 190, ORANGE));
+        this.flowers.push(new Flower(2, 350, 457, 130, YELLOW));
     }
 
     async connectedCallback() {
@@ -233,6 +312,16 @@ export class GrooveGarden extends HTMLElement {
                 window.requestAnimationFrame((t) => this._animate(t));
             }
         });
+
+
+        GrooveGarden.aqua_texture.src = '/assets/images/textures/aqua.png';
+        GrooveGarden.redorange_texture.src = '/assets/images/textures/red-paper.png';
+        GrooveGarden.lime_texture.src = '/assets/images/textures/lime.png';
+        GrooveGarden.center_orange_yellow.src = '/assets/images/flowers/circle_orange_yellow.png';
+        GrooveGarden.aqua_texture.onload = () => { this.render(); }
+        GrooveGarden.redorange_texture.onload = () => { this.render(); }
+        GrooveGarden.lime_texture.onload = () => { this.render(); }
+        GrooveGarden.center_orange_yellow.onload = () => { this.render(); }
     }
 
     private _start_time = 0;
@@ -278,7 +367,7 @@ export class GrooveGarden extends HTMLElement {
         const c = this.ctx;
         let cx = w/2;
         const cy = h/2 - 30;
-
+        c.resetTransform();
         c.clearRect(0, 0, w, h);
         let beat = -1;
 
@@ -289,4 +378,44 @@ export class GrooveGarden extends HTMLElement {
         this.flowers.forEach((flower) => { flower.draw(c, beat); });
     }
  
+}
+
+
+
+
+
+type Point2 = [ x : number, y : number ];
+type Point3 = [ x : number, y : number, z : number ];
+type Vector3 = [ a : number, b : number, c : number ];
+
+function rotate(point : Point2, theta : number) : Point2 {
+    const x = point[0] * Math.cos(theta) - point[1] * Math.sin(theta);
+    const y = point[0] * Math.sin(theta) - point[1] * Math.cos(theta);
+    return [ x, y ];
+}
+
+function cross(A : Vector3, B : Vector3) : Vector3 {
+    const x = A[1] * B[2] - A[2] * B[1];
+    const y = A[2] * B[0] - A[0] * B[2];
+    const z = A[0] * B[1] - A[1] * B[0];
+    return [ x, y, z ];
+}
+
+function dot(A : Vector3, B : Vector3) : number {
+    return A[0] * B[0] + A[1] * B[1] + A[2] * B[2];
+}
+
+function normal(a : Point3, b : Point3, c : Point3) : Vector3 {
+    const AB : Vector3 = [ b[0] - a[0], b[1] - a[1], b[2] - a[2] ];
+    const AC : Vector3 = [ c[0] - a[0], c[1] - a[1], c[2] - a[2] ];
+    return cross(AB, AC);
+}
+
+function length(V : Vector3) : number {
+    return Math.sqrt(V[0] * V[0] + V[1] * V[1] + V[2] * V[2]);
+}
+
+function normalize(V : Vector3) : Vector3 {
+    const l = length(V);
+    return [ V[0] / l, V[1] / l, V[2] / l ];
 }
