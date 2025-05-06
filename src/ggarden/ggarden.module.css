@@ -1,0 +1,157 @@
+* {
+    box-sizing: border-box;
+}
+
+#garden-container {
+   text-align: left;
+   margin: 0;
+   padding: 0;
+   position: relative;
+   max-width: fit-content;
+}
+
+#garden-canvas {
+    margin: 0;
+    padding: 0;
+    background-image: url('/images/textures/bluesky.jpg'), url('/assets/images/textures/bluesky.jpg');
+    background-size: cover; 
+}
+
+
+#home-button {
+    outline: none;
+    border: none;
+    color: white;
+    background-color: transparent;
+    width: 50px;
+    height: 50px;
+    left: 20px;
+    top: 15px;
+    font-size: 50px;
+    position: absolute;
+    font-family: "Barriecito", system-ui;
+    font-weight: bold;
+}
+
+.bpm-indicator {
+    font-family: "Barriecito", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    position: absolute;
+    top: 20px;
+    right: 50px;
+    width: 200px;
+    height: 50px;
+    pointer-events: none;
+    color: white;
+    text-align: right;
+}
+
+@keyframes play-slide {
+    0%   {background-color: green; right: 0px; border-color: #3d4a3dcc; }
+    100% {background-color: #ba5c38; right: calc(100% - 60px); border-color: #a10606; }
+}
+  
+.play-groove {
+    width: 280px;
+    height: 60px;
+    background-color: transparent;
+    position: absolute;
+    border-radius: 30px;
+    right: 20px;
+    bottom: 15px;
+}
+
+.play-groove.pause {
+    background-color: #fff9;
+}
+
+#play-pause-button {
+    width: 60px;
+    height: 60px;
+    font-size: 25px;
+    text-align: center;
+    color: #fffc;
+    border-width: 3px;
+    border-radius: 50%;
+    border-style: solid;
+    border-color: #3d4a3dcc;
+    background-color: #518a78;
+    outline: none;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+}
+#play-pause-button:active {
+    color: white;
+}
+
+.pause #play-pause-button {
+    animation-name: play-slide;
+    animation-duration: 0.25s;
+    font-size: 35px;
+    right: calc(100% - 60px);
+    background-color: #ba5c38;
+    border-color: #a10606;
+}
+
+.genre-select {
+    position: absolute;
+    color: white;
+    border: 1px solid white;
+    border-radius: 0.5em;
+    outline: none;
+    background-color: #0004;
+    font-family: "Barriecito", system-ui;
+    font-weight: 400;
+    font-style: normal;
+    font-size: 30px;
+    left: 100px;
+    bottom: 14px;
+    height: 60px;
+    padding-left: 8px;
+}
+
+.genre-select ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#qrcode {
+    width: 60px;
+    position: absolute;
+    right: 20px;
+    bottom: 92px;
+}
+
+#qrcode.big {
+    background-color: white;
+    border-left: 40px solid white;
+    border-top: 40px solid white;
+    border-radius: 20px;
+    width: 500px;
+    height: 500px;
+    right: calc(50% - 250px);
+    bottom: calc(50% - 250px);
+    animation-name: qr-slide;
+    animation-duration: 0.25s;
+}
+
+@keyframes qr-slide {
+    0% {
+        background-color: transparent;
+        width: 60px;
+        height: 60px;
+        right: 20px;
+        bottom: 92px;
+    }
+    100% {
+        background-color: white; 
+        width: 500px;
+        height: 500px;
+        right: calc(50% - 250px);
+        bottom: calc(50% - 250px);
+    }
+}
