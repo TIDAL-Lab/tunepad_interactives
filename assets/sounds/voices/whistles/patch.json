@@ -1,0 +1,135 @@
+{
+    "patch_id": 206,
+    "description": "Whistles and calls",
+    "created": "2022-02-26 22:38:44.333",
+    "modified": "2022-03-08 11:19:08.589",
+    "format": "tunepad-patch",
+    "version": "2.0",
+    "instrument": "drums",
+    "name": "Whistles",
+    "nodes": [
+        {
+            "A": 0,
+            "D": 0.1,
+            "R": 0.15,
+            "S": 1,
+            "a shape": 4,
+            "cx": 70,
+            "cy": 0,
+            "d shape": 2,
+            "id": 0,
+            "level": 0,
+            "r shape": 2,
+            "type": "out"
+        },
+        {
+            "cx": -29.5000019073486,
+            "cy": -4.76837158203125e-7,
+            "detune": 0,
+            "detune-mod": 20,
+            "id": 2,
+            "playback": 1,
+            "playback-mod": 0.15,
+            "sample-pack": "whistles",
+            "samples": [
+                {
+                    "name": "whistle",
+                    "sample": "whistle1",
+                    "step": 0
+                },
+                {
+                    "name": "coach whistle",
+                    "sample": "whistle2",
+                    "step": 1
+                },
+                {
+                    "name": "whistle",
+                    "sample": "whistle3",
+                    "step": 2
+                },
+                {
+                    "name": "slide",
+                    "sample": "whistle4",
+                    "step": 3
+                },
+                {
+                    "name": "train whistle",
+                    "sample": "whistle5",
+                    "step": 4
+                },
+                {
+                    "name": "kazoo",
+                    "sample": "whistle6",
+                    "step": 5
+                },
+                {
+                    "name": "slide bop",
+                    "sample": "whistle8",
+                    "step": 6
+                },
+                {
+                    "name": "crickets",
+                    "sample": "crickets",
+                    "step": 7
+                },
+                {
+                    "name": "crow",
+                    "sample": "crow",
+                    "step": 8
+                },
+                {
+                    "name": "frogs",
+                    "sample": "frogs",
+                    "step": 9
+                },
+                {
+                    "name": "loon",
+                    "sample": "loon1",
+                    "step": 10
+                },
+                {
+                    "name": "loon",
+                    "sample": "loon2",
+                    "step": 11
+                },
+                {
+                    "name": "coach whistle",
+                    "sample": "coach-whistle",
+                    "step": 12
+                },
+                {
+                    "name": "slide down",
+                    "sample": "slide-down",
+                    "step": 13
+                },
+                {
+                    "name": "slide up",
+                    "sample": "slide-up",
+                    "step": 14
+                },
+                {
+                    "name": "falling",
+                    "sample": "falling",
+                    "step": 15
+                }
+            ],
+            "type": "drums"
+        }
+    ],
+    "parameters": [],
+    "routing": [
+        {
+            "dest": 0,
+            "id": 1,
+            "level": 0,
+            "source": 2,
+            "type": "audio"
+        }
+    ],
+    "view": {
+        "height": 10000,
+        "width": 10000,
+        "x": -168.5,
+        "y": -50
+    }
+}
