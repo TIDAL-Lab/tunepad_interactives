@@ -215,6 +215,9 @@ export class GrooveGarden extends HTMLElement {
                 if (insect.pointerDown(evt)) {
                     this.insects.splice(i, 1);
                     this.insects.push(insect);
+                    if (this.focusFlower) {
+                        this.focusFlower = undefined;
+                    }
                     return;
                 }
             }
