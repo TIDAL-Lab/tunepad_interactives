@@ -16,7 +16,7 @@ const MAX_TEMPO = 180;
 const MIN_TEMPO = 40;
 const MAX_DETUNE = 250;
 const MIN_DETUNE = -250;
-const HOST_URL = 'https://learn.tunepad.space/interactives/groove-garden';
+const HOST_URL = 'https://learn.tunepad.space/interactives/groove-garden/';
 
 export class GrooveGarden extends HTMLElement {
 

@@ -39,7 +39,7 @@ export class Insect {
         this.targetY = this.y;
         this.targetH = this.h;
 
-        document.addEventListener('pointermove', (e : MouseEvent) => {
+        garden.canvas.addEventListener('pointermove', (e : MouseEvent) => {
             if (this.down) {
                 this.targetX = e.offsetX;
                 this.targetY = e.offsetY;
@@ -47,13 +47,15 @@ export class Insect {
                 const dy = this.targetY - this.y;
                 const h = -1 * Math.atan2(dy, dx);
                 this.targetH = (h < 0) ? Math.PI * 2 + h : h;
-                garden.render();
+                //e.stopPropagation();
+                //garden.render();
             }
         });
 
-        document.addEventListener('pointerup', (e) => {
+        garden.canvas.addEventListener('pointerup', (e) => {
             if (this.down) {
                 this.down = false;
+                garden.releasePointerCapture(e.pointerId);
                 if (this.px.outOfBounds() || this.py.outOfBounds()) {
                     this.dock(this.dockX, this.dockY);
                 }
@@ -115,6 +117,7 @@ export class Insect {
             } else {
                 this.down = true;
                 this.trail = [];
+                this.garden.canvas.setPointerCapture(e.pointerId);
                 return true;
             }
         }

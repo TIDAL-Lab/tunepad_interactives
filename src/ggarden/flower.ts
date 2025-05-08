@@ -64,7 +64,7 @@ export class Flower {
 
     bounce(factor : number = 1.05) {
         this.currentR *= factor;
-        this.currentC = 1.0;
+        //this.currentC = 1.0;
     }
 
 

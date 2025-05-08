@@ -15,6 +15,7 @@
     padding: 0;
     background-image: url('/images/textures/bluesky.jpg'), url('/assets/images/textures/bluesky.jpg');
     background-size: cover; 
+    touch-action: none;
 }
 
 
@@ -60,7 +61,7 @@
     position: absolute;
     border-radius: 30px;
     right: 20px;
-    bottom: 15px;
+    bottom: 10px;
 }
 
 .play-groove.pause {
@@ -108,7 +109,7 @@
     font-style: normal;
     font-size: 30px;
     left: 100px;
-    bottom: 14px;
+    bottom: 10px;
     height: 60px;
     padding-left: 8px;
 }
