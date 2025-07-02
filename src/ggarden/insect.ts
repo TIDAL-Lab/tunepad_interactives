@@ -49,6 +49,7 @@ export class Insect {
                 this.targetH = (h < 0) ? Math.PI * 2 + h : h;
                 //e.stopPropagation();
                 //garden.render();
+                this.garden.shimmer(artwork);
             }
         });
 

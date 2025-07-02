@@ -1,6 +1,10 @@
 /**
  * Groove Garden prototype
  * April 27, 2025
+ * 
+ * TODO:
+ *   Fix Play/Stop button icons
+ *   Add clouds
  */
 import { Synthesizer, TunePadAudio, SoundLoader, Note } from "@tunepad/audio";
 import { Flower } from "./flower";
@@ -126,10 +130,11 @@ export class GrooveGarden extends HTMLElement {
         this.freqParam.defaultValue = 6000;
         this.freqParam.name = 'Frequency';
 
-        this.panParam = new Parameter(-1, 1, x0, x1);
+        // usually -1 to 1
+        this.panParam = new Parameter(-0.9, 0.1, x0, x1);
         this.panParam.value = 0;
         this.panParam.defaultValue = 0;
-        this.panParam.name = 'Pan';
+        this.panParam.name = ''; // this.panParam.name = 'Pan';
 
         this.detuneParam = new Parameter(MIN_DETUNE, MAX_DETUNE, 150, 550);
         this.detuneParam.value = 0;
@@ -142,11 +147,11 @@ export class GrooveGarden extends HTMLElement {
         this.tempoParam.defaultValue = 90;
         this.tempoParam.name = 'Tempo';
 
-        this.gainParam = new Parameter(0.02, 1.0, 150, 550);
+        this.gainParam = new Parameter(0.8, 1.0, 150, 550); //this.gainParam = new Parameter(0.02, 1.0, 150, 550);
         this.gainParam.value = 0.9;
         this.gainParam.defaultValue = 0.9;
         this.gainParam.inverted = true;
-        this.gainParam.name = 'Volume';
+        this.gainParam.name = ''; // this.gainParam.name = 'Volume';
 
         this.qParam = new Parameter(0.1, 4.0, 150, 550);
         this.qParam.value = 1.0;
@@ -276,7 +281,6 @@ export class GrooveGarden extends HTMLElement {
         this.playButton.addEventListener('click', (evt) => {
             if (this.isPlaying) {
                 this.playButton.parentElement?.classList.toggle('pause', false);
-                this.playButton.innerHTML = '&nbsp;▶';
                 this.synth.cancelAllNotes();
                 if (this._timer >= 0) clearInterval(this._timer);
                 //(this.root.getElementById('bee-dance') as HTMLAudioElement).pause();
@@ -284,7 +288,6 @@ export class GrooveGarden extends HTMLElement {
                 this.render();
             } else {
                 this.playButton.parentElement?.classList.toggle('pause', true);
-                this.playButton.innerHTML = '⏹';
                 const note = new Note(10);
                 note.velocity = 30;
                 this.synth.scheduleNote(note, 0, 0, this.chain);
@@ -334,14 +337,16 @@ export class GrooveGarden extends HTMLElement {
         const oldW = this.canvas.width;
         const oldH = this.canvas.height;
 
+        /*
         if (w / aspect_ratio > h) {
             w = h * aspect_ratio;
         } else {
             h = w / aspect_ratio;
         }
+        */
 
         this.canvas.setAttribute('width', `${w}`);
-        this.canvas.setAttribute('height', `${h - 4}`);
+        this.canvas.setAttribute('height', `${h}`);
 
         this.dicon.y = h - this.dicon.h - 5;
 
@@ -684,4 +689,19 @@ export class GrooveGarden extends HTMLElement {
         const renderer = new Renderer();
         renderer.drawCanvas(matrix, qrCanvas);
     }
+
+    shimmer(insect : string) {
+        if (this._shimmer === undefined && this.loop && insect === 'butterfly') {
+            const gain = new GainNode(this.audio.context);
+            gain.connect(this.analyzer);
+            gain.gain.value = 0.15;
+            gain.gain.linearRampToValueAtTime(0, this.audio.contextTime + this.loop.duration);
+            this._shimmer = new AudioBufferSourceNode(this.audio.context);
+            this._shimmer.buffer = this.loop;
+            this._shimmer.connect(gain);
+            this._shimmer.start(0);
+            this._shimmer.addEventListener('ended', e => { this._shimmer = undefined; });
+        }
+    }
+    private _shimmer? : AudioBufferSourceNode;
 }

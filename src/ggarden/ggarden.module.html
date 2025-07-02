@@ -2,13 +2,22 @@
   <button id="home-button">⌂</button>
   <div class="bpm-indicator">90 bpm</div>
   <div class="play-groove">
-    <button id="play-pause-button">&nbsp;▶</button>
+    <button id="play-pause-button">
+      <svg class="play" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512">
+        <path d="M142,39c-14.8-9.1-33.4-9.4-48.5-.9-15.1,8.5-24.5,24.5-24.5,41.9v352c0,17.4,9.4,33.4,24.5,41.9,15.1,8.5,33.7,8.1,48.5-.9l288-176c14.3-8.7,23-24.2,23-41s-8.7-32.2-23-41L142,39Z"/>
+      </svg>
+      <svg class="stop" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 512 512">
+        <rect x="47.89" y="47.87" width="416.23" height="416.23" rx="29.9" ry="29.9"/>
+      </svg>
+    </button>
   </div>
-  <select class="genre-select">
-    <option value="808-drums">Hip Hop</option>
-    <option value="rock-drums">Rock</option>
-    <option value="linndrum">1980s</option>
-  </select>
+  <div class="genre-wrapper">
+    <select class="genre-select">
+      <option value="808-drums">Hip Hop</option>
+      <option value="rock-drums">Rock</option>
+      <option value="linndrum">1980s</option>
+    </select>
+  </div>
   <canvas id="garden-canvas" width="950" height="675"></canvas>
   <canvas id="qrcode" width="500" height="500"></canvas>
 </div>

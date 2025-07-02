@@ -61,7 +61,7 @@
     position: absolute;
     border-radius: 30px;
     right: 20px;
-    bottom: 10px;
+    bottom: 14px;
 }
 
 .play-groove.pause {
@@ -83,11 +83,16 @@
     position: absolute;
     right: 0px;
     top: 0px;
+    fill: #fffc;
+    padding: 10px;
+}
+#play-pause-button svg.play {
+    position: relative;
+    left: 2px;
 }
 #play-pause-button:active {
-    color: white;
+    fill: white;
 }
-
 .pause #play-pause-button {
     animation-name: play-slide;
     animation-duration: 0.25s;
@@ -96,35 +101,53 @@
     background-color: #ba5c38;
     border-color: #a10606;
 }
+#play-pause-button svg.stop { display: none; }
+#play-pause-button svg.play { display: block; }
+.pause #play-pause-button svg.stop { display: block; }
+.pause #play-pause-button svg.play { display: none; }
 
-.genre-select {
+.genre-wrapper {
     position: absolute;
     color: white;
     border: 1px solid white;
     border-radius: 0.5em;
-    outline: none;
+    left: 100px;
+    bottom: 18px;
+    height: 55px;
+    width: 300px;
     background-color: #0004;
+    box-sizing: border-box;
+}
+
+.genre-select {
+    outline: none;
+    border: none;
     font-family: "Barriecito", system-ui;
     font-weight: 400;
     font-style: normal;
     font-size: 30px;
-    left: 100px;
-    bottom: 10px;
-    height: 60px;
-    padding-left: 8px;
+    appearance: none;
+    padding-left: 20px;
+    background-color: transparent;
+    height: 55px;
+    color: white;
+    width: 250px;
 }
 
-.genre-select ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.genre-wrapper::after {
+    content: '▼';
+    font-size: 150%;
+    position: relative;
+    top: -3px;
 }
+
 
 #qrcode {
     width: 60px;
     position: absolute;
     right: 20px;
     bottom: 92px;
+    display: none;
 }
 
 #qrcode.big {
