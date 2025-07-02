@@ -61,7 +61,7 @@
     position: absolute;
     border-radius: 30px;
     right: 20px;
-    bottom: 14px;
+    bottom: 10px;
 }
 
 .play-groove.pause {
@@ -112,7 +112,7 @@
     border: 1px solid white;
     border-radius: 0.5em;
     left: 100px;
-    bottom: 18px;
+    bottom: 12px;
     height: 55px;
     width: 300px;
     background-color: #0004;
